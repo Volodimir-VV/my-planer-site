@@ -77,20 +77,33 @@
         };
 
         // --- Головний компонент ---
-        function App() {
-            const [trip, setTrip] = useState(null);
+      function App() {
+    // 1. Оголошуємо ВСІ хуки (useState, useEffect) відразу
+    const [trip, setTrip] = useState(null);
+    const [activeDayId, setActiveDayId] = useState(null); // Поки null
+    const [isEditSettings, setIsEditSettings] = useState(false);
+    // ... інші useState ...
 
-            useEffect(() => {
-                fetch('./data.json')
-                    .then(res => res.json())
-                    .then(data => setTrip(data))
-                    .catch(err => {
-                        console.error("Помилка завантаження, використовую дефолтні дані:", err);
-                        setTrip(INITIAL_TRIP_DATA);
-                    });
-            }, []);
+    useEffect(() => {
+        fetch('./data.json')
+            .then(res => res.json())
+            .then(data => {
+                setTrip(data);
+                setActiveDayId(data.days[0]?.id || ""); // Встановлюємо ID тільки коли дані прийшли
+            })
+            .catch(err => {
+                console.error("Помилка:", err);
+                setTrip(INITIAL_TRIP_DATA);
+                setActiveDayId(INITIAL_TRIP_DATA.days[0]?.id || "");
+            });
+    }, []);
 
-            if (!trip) return <div className="flex h-screen items-center justify-center text-slate-400">Завантаження даних...</div>;
+    // 2. Тепер перевірка на завантаження
+    if (!trip) return <div className="flex h-screen items-center justify-center">Завантаження даних...</div>;
+
+    // 3. Далі йде решта коду (рендеринг карти, return і т.д.)
+    // ...
+}
 
             // --- Тут вставлено твою оригінальну логіку (useState, useEffect, обробники) ---
             const [activeDayId, setActiveDayId] = useState(trip.days[0]?.id || "");
